@@ -1,119 +1,173 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spool - Digital Menu</title>
-    <!-- Google Fonts for Arabic -->
+    <title>Spool - Maintenance Mode</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/display.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #1a4d2e 0%, #0a2417 100%);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 40px;
+            direction: rtl;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .logo {
+            width: 200px;
+            height: auto;
+            margin: 0 auto 40px;
+            filter: drop-shadow(0 10px 30px rgba(255, 215, 0, 0.3));
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scale(1.05);
+            }
+        }
+
+        h1 {
+            font-size: 5rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.5));
+            }
+            to {
+                filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.8));
+            }
+        }
+
+        .subtitle {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            opacity: 0.95;
+        }
+
+        .message {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 50px;
+            opacity: 0.85;
+            line-height: 1.6;
+        }
+
+        .icon {
+            font-size: 8rem;
+            margin-bottom: 40px;
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .info-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            margin-top: 50px;
+        }
+
+        .info-box p {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+
+        .info-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .footer {
+            margin-top: 60px;
+            font-size: 1.5rem;
+            opacity: 0.7;
+        }
+
+        /* English version */
+        body.en {
+            direction: ltr;
+        }
+
+        body.en h1 {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+    </style>
 </head>
 <body>
-    <div id="app">
-        <!-- Connection Status Indicator -->
-        <div class="connection-status" :class="{ 'connected': isConnected }">
-            <span class="status-dot"></span>
+    <div class="container">
+        <img src="logo transparent.png" alt="Spool Logo" class="logo">
+        
+        <div class="icon">⚙️</div>
+        
+        <h1>جاري تحديث القائمة</h1>
+        
+        <div class="subtitle">نعمل على تحديث الأسعار</div>
+        
+        <div class="message">
+            نعتذر عن الإزعاج<br>
+            سنعود قريباً بقائمة محدثة
         </div>
 
-        <!-- Main Display Container -->
-        <div class="display-container">
-            <!-- Slide Container -->
-            <transition :name="transitionType" mode="out-in">
-                <div class="slide" :key="currentSlide.id" v-if="currentSlide">
-                    
-                    <!-- Background Image with Ken Burns Effect -->
-                    <div class="slide-background" 
-                         :style="{ backgroundImage: `url(${currentSlide.imageUrl})` }"
-                         :class="{ 'loaded': imageLoaded }"
-                         @load="onImageLoad"></div>
-                    <div class="slide-overlay"></div>
-
-                    <!-- Content Based on Type -->
-                    <div class="slide-content">
-                        
-                        <!-- Announcement Type (Grand Opening) -->
-                        <div v-if="currentSlide.type === 'announcement'" class="content-announcement">
-                            <div class="badge grand-opening" :style="{ background: currentSlide.accentColor }">
-                                {{ lang === 'en' ? currentSlide.badge : currentSlide.badgeAr }}
-                            </div>
-                            <h1 class="announcement-title">{{ lang === 'en' ? currentSlide.name : currentSlide.nameAr }}</h1>
-                            <p class="announcement-subtitle">{{ lang === 'en' ? currentSlide.subtitle : currentSlide.subtitleAr }}</p>
-                            <div class="shop-logo">{{ settings.shopName }}</div>
-                        </div>
-
-                        <!-- Product Type -->
-                        <div v-else-if="currentSlide.type === 'product'" class="content-product">
-                            <div class="product-info">
-                                <h2 class="product-name">{{ lang === 'en' ? currentSlide.name : currentSlide.nameAr }}</h2>
-                                <p class="product-description">{{ lang === 'en' ? currentSlide.description : currentSlide.descriptionAr }}</p>
-                                <div class="price-container">
-                                    <span class="price">{{ currentSlide.price }}</span>
-                                    <span class="currency">{{ settings.currency }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Combo Type -->
-                        <div v-else-if="currentSlide.type === 'combo'" class="content-combo">
-                            <div class="badge" v-if="currentSlide.badge" :style="{ background: currentSlide.accentColor }">
-                                {{ lang === 'en' ? currentSlide.badge : currentSlide.badgeAr }}
-                            </div>
-                            <div class="combo-info">
-                                <h2 class="combo-name">{{ lang === 'en' ? currentSlide.name : currentSlide.nameAr }}</h2>
-                                <p class="combo-description">{{ lang === 'en' ? currentSlide.description : currentSlide.descriptionAr }}</p>
-                                <div class="price-row">
-                                    <div class="price-container">
-                                        <span class="price">{{ currentSlide.price }}</span>
-                                        <span class="currency">{{ settings.currency }}</span>
-                                    </div>
-                                    <div class="original-price" v-if="currentSlide.originalPrice">
-                                        <span class="strikethrough">{{ currentSlide.originalPrice }} {{ settings.currency }}</span>
-                                    </div>
-                                </div>
-                                <div class="savings" v-if="currentSlide.originalPrice">
-                                    {{ lang === 'en' ? 'Save' : 'وفر' }} {{ currentSlide.originalPrice - currentSlide.price }} {{ settings.currency }}!
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Promotion Type -->
-                        <div v-else-if="currentSlide.type === 'promotion'" class="content-promotion">
-                            <div class="badge" v-if="currentSlide.badge" :style="{ background: currentSlide.accentColor }">
-                                {{ lang === 'en' ? currentSlide.badge : currentSlide.badgeAr }}
-                            </div>
-                            <div class="promo-info">
-                                <h2 class="promo-name">{{ lang === 'en' ? currentSlide.name : currentSlide.nameAr }}</h2>
-                                <p class="promo-description">{{ lang === 'en' ? currentSlide.description : currentSlide.descriptionAr }}</p>
-                                <div class="price-container" v-if="currentSlide.price">
-                                    <span class="price-prefix">{{ lang === 'en' ? 'Starting at' : 'ابتداءً من' }}</span>
-                                    <span class="price">{{ currentSlide.price }}</span>
-                                    <span class="currency">{{ settings.currency }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <!-- Footer with Logo and Tagline -->
-                    <div class="slide-footer">
-                        <img src="logo transparent.png" alt="Spool Logo" class="footer-logo">
-                        <div class="footer-tagline">{{ lang === 'en' ? settings.tagline : settings.taglineAr }}</div>
-                    </div>
-
-                </div>
-            </transition>
+        <div class="info-box">
+            <p>⏰ التحديث سيكتمل قريباً</p>
+            <p>🥗 طلباتك لازالت متاحة عند الكاشير</p>
+            <p>📞 للاستفسار: اسأل موظفينا</p>
         </div>
 
-        <!-- Progress Indicator -->
-        <div class="progress-bar">
-            <div class="progress-fill" :style="{ width: progressWidth + '%' }"></div>
+        <div class="footer">
+            طازج من المزرعة لطبقك
         </div>
     </div>
 
-    <!-- Vue.js -->
-    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
-    <script src="assets/js/display.js"></script>
+    <script>
+        // Auto-refresh every 2 minutes to check if we're back
+        setTimeout(() => {
+            window.location.reload();
+        }, 120000);
+    </script>
 </body>
 </html>
